@@ -1,5 +1,17 @@
 @import "loader.scss";
-@import "breakpoints.scss";
+/// Sets breakpoints.
+/// @param {map} $x Breakpoints.
+@mixin breakpoints($x: ()) {
+  $breakpoints: $x !global;
+}
+
+@include breakpoints((
+        xlarge: (1281px, 1680px),
+        large: (981px, 1280px),
+        medium: (737px, 980px),
+        small: (481px, 736px),
+        xsmall: (null, 480px),
+));
 
 // Reset base tag.
 html, body, div, span, applet, object,
@@ -11,16 +23,6 @@ pre, a {
   vertical-align: baseline;
 }
 
-
-// Breakpoints definition.
-@include breakpoints((
-        xlarge: (1281px, 1680px),
-        large: (981px, 1280px),
-        medium: (737px, 980px),
-        small: (481px, 736px),
-        xsmall: (null, 480px),
-));
-
 body {
   overflow-x: hidden;
   margin: 0;
@@ -30,15 +32,15 @@ body {
   font-size: 15pt;
   line-height: 1.65em;
 
-  @include breakpoint('<=xlarge') {
+  @media (min-width: 1281px) and (max-width: 1680px) {
     font-size: 13pt;
   }
 
-  @include breakpoint('<=large') {
+  @media (min-width: 981px) and (max-width: 1280px) {
     font-size: 12pt;
   }
 
-  @include breakpoint('<=small') {
+  @media (max-width: 736px) {
     font-size: 11pt;
   }
 
@@ -54,7 +56,7 @@ body {
   }
 }
 
-.wrap{
+.wrap {
   background-color: #00000094;;
   padding: 20px 0;
   margin: 100px 0;
@@ -68,13 +70,6 @@ body {
 .row {
   flex-direction: row;
   display: flex;
-}
-
-.fill-available {
-  width: 100%;
-  width: -moz-available; /* WebKit-based browsers will ignore this. */
-  width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-  width: stretch;
 }
 
 .col {

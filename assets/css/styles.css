@@ -39,13 +39,13 @@ body {
   background: #fff;
   font-size: 15pt;
   line-height: 1.65em; }
-  @media screen and (max-width: 1680px) {
+  @media (min-width: 1281px) and (max-width: 1680px) {
     body {
       font-size: 13pt; } }
-  @media screen and (max-width: 1280px) {
+  @media (min-width: 981px) and (max-width: 1280px) {
     body {
       font-size: 12pt; } }
-  @media screen and (max-width: 736px) {
+  @media (max-width: 736px) {
     body {
       font-size: 11pt; } }
   body::before {
@@ -70,14 +70,6 @@ body {
 .row {
   flex-direction: row;
   display: flex; }
-
-.fill-available {
-  width: 100%;
-  width: -moz-available;
-  /* WebKit-based browsers will ignore this. */
-  width: -webkit-fill-available;
-  /* Mozilla-based browsers will ignore this. */
-  width: stretch; }
 
 .col {
   flex-direction: column;
