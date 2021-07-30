@@ -64,8 +64,10 @@ export class Carousel {
     }
 
     renderCarousel() {
+        // <my-carousel> is not known html tag, it isn't a webcomponents (then is ignored by browser) but is useful for identifying the component location
+        // inside the dom (angular style!)
         this.$container.appendChild(htmlToElement(`
-            <my-carousel>
+            <my-carousel> 
                 <div class="row carousel__info">
                     <div class="col carousel__info_icon"><span class="material-icons">lightbulb</span></div>
                     <div class="col">
@@ -107,15 +109,16 @@ export class Carousel {
         }
     }
 
-    fetchNewChunk() {
-        this.changeLoadingState();
-        this.renderPlaceholderChunk();
-        this.fetchCards(this.chunkSize).then(result => {
-            this.renderCardChunk(result);
-            this.update();
-            this.changeLoadingState();
-        })
-    }
+     async fetchNewChunk() {
+         this.changeLoadingState();
+         this.renderPlaceholderChunk();
+         let result = await this.fetchCards(this.chunkSize);
+         // this.fetchCards(this.chunkSize).then(result => {
+             this.renderCardChunk(result);
+             this.update();
+             this.changeLoadingState();
+         // })
+     }
 
     renderPlaceholderChunk(){
         this.chunkSizeArray.forEach(_ => {
@@ -247,8 +250,8 @@ export class Carousel {
             window.addEventListener('mouseup', this.handleTouchEnd);
             document.body.addEventListener('mouseleave', this.handleTouchEnd);
         }
-        this.$next.addEventListener('click', this.handleNext);
-        this.$prev.addEventListener('click', this.handlePrev);
+        this.$next.addEventListener('click', this.handleNext, {passive: true});
+        this.$prev.addEventListener('click', this.handlePrev, {passive: true});
     }
 
     animationFrame() {

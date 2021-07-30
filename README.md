@@ -1,4 +1,4 @@
-# Pure javascript Responsive Carousel
+# Vanilla javascript Responsive Carousel
 the structure of the project is the follow:
 - `index.html`
 - `assets` => only static resources like css or images,
