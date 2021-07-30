@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="assets/css/carousel.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+    <script type="module" src="src/carousel.js"></script>
+    <script type="module" src="src/utility/utility.js"></script>
+
+    <title>FunnyCarousel</title>
+</head>
+<body>
+
+<div id="my-carousel" class="wrap"></div>
+<div id="my-carousel-2" class="wrap"></div>
+
+<script type="module">
+    import { delay, generateXCardModel} from './src/utility/utility.js';
+    import { Carousel } from './src/carousel.js';
+
+    let options1 = {
+        container: '#my-carousel',
+        title: 'Fresh and just uploaded content',
+        subtitle: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae commodi doloribus et excepturi perspiciatis quidem reprehenderit sequi totam, voluptate voluptates? Accusamus accusantium asperiores commodi consequuntur eveniet minus molestiae suscipit, voluptatem.',
+        fetchCards: async (chunkSize) => {
+            return await delay(4000).then(_ => {
+                return generateXCardModel(chunkSize)
+            })
+        },
+    }
+    new Carousel(options1);
+
+    let options2 = {
+        container: '#my-carousel-2',
+        title: 'Fresh and just uploaded content',
+        subtitle: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae commodi doloribus et excepturi perspiciatis quidem reprehenderit sequi totam, voluptate voluptates? Accusamus accusantium asperiores commodi consequuntur eveniet minus molestiae suscipit, voluptatem.',
+        fetchCards: async (chunkSize) => {
+            return await delay(2000).then(_ => {
+                return generateXCardModel(chunkSize)
+            })
+        },
+        hoverEffect: true,
+    }
+    new Carousel(options2);
+
+</script>
+
+
+</body>
+</html>
