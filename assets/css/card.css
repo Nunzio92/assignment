@@ -45,6 +45,7 @@
     .card.loading .card__text {
       height: 18px;
       width: 3vw;
+      min-width: 60px;
       position: absolute !important;
       background: linear-gradient(to right, #d5d5d5 8%, #d5d5d5 18%, #d5d5d5 33%) !important; }
   .card .card__text,

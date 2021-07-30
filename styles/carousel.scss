@@ -16,7 +16,7 @@
   }
 
   &_title {
-    margin: 0;
+    margin: 0 0 0.5rem;
   }
 
   &_subtitle {
@@ -55,7 +55,8 @@
     position: relative;
     z-index: 2;
     pointer-events: none;
-    bottom: 1vw;
+    bottom: 0;
+    margin: 15px 0;
     width: 20vw;
     left: 3vw;
     height: 1px;
@@ -78,7 +79,7 @@
     position: absolute;
     top: 15px;
     width: 3vw;
-    height: calc(100% - 3vw - 15px);
+    height: calc(100% - 3vw - 46px);
     background-color: rgba(146, 146, 146, 0.62);
     z-index: 10;
     cursor: pointer;
@@ -86,7 +87,7 @@
     align-items: center;
     justify-content: center;
     color: #fff;
-    min-width: 40px;
+    min-width: 35px;
 
     &.disabled {
       visibility: hidden;
@@ -103,7 +104,7 @@
   }
 
   &__navigation_prev {
-    left: 0;
+    left: -1px;
 
     &:after {
       content: '<';
@@ -111,7 +112,7 @@
   }
 
   &__navigation_next {
-    right: 0;
+    right: -1px;
 
     &:after {
       content: '>';

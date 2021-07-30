@@ -45,6 +45,7 @@
     .card.loading .card__text {
       height: 18px;
       width: 3vw;
+      min-width: 60px;
       position: absolute !important;
       background: linear-gradient(to right, #d5d5d5 8%, #d5d5d5 18%, #d5d5d5 33%) !important; }
   .card .card__text,
@@ -96,7 +97,7 @@
     .carousel__info_icon span {
       color: #fff; }
   .carousel__info_title {
-    margin: 0; }
+    margin: 0 0 0.5rem; }
   .carousel__info_subtitle {
     text-overflow: ellipsis;
     max-width: 50vw;
@@ -124,7 +125,8 @@
     position: relative;
     z-index: 2;
     pointer-events: none;
-    bottom: 1vw;
+    bottom: 0;
+    margin: 15px 0;
     width: 20vw;
     left: 3vw;
     height: 1px;
@@ -143,7 +145,7 @@
     position: absolute;
     top: 15px;
     width: 3vw;
-    height: calc(100% - 3vw - 15px);
+    height: calc(100% - 3vw - 46px);
     background-color: rgba(146, 146, 146, 0.62);
     z-index: 10;
     cursor: pointer;
@@ -151,7 +153,7 @@
     align-items: center;
     justify-content: center;
     color: #fff;
-    min-width: 40px; }
+    min-width: 35px; }
     .carousel__navigation_prev.disabled, .carousel__navigation_next.disabled {
       visibility: hidden; }
     .carousel__navigation_prev:after, .carousel__navigation_next:after {
@@ -162,11 +164,11 @@
       font-variant: initial;
       line-height: 1; }
   .carousel__navigation_prev {
-    left: 0; }
+    left: -1px; }
     .carousel__navigation_prev:after {
       content: '<'; }
   .carousel__navigation_next {
-    right: 0; }
+    right: -1px; }
     .carousel__navigation_next:after {
       content: '>'; }
 

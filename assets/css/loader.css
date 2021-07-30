@@ -5,7 +5,7 @@
   margin: auto;
   position: absolute;
   top: -13px;
-  left: 21vw; }
+  left: calc(20vw + 15px); }
 
 .img-spinning-circle.active:after {
   content: " ";

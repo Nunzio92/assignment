@@ -1,10 +1,46 @@
 @import "loader.scss";
+@import "breakpoints.scss";
+
+// Reset base tag.
+html, body, div, span, applet, object,
+iframe, h1, h2, h3, h4, h5, h6, p, blockquote,
+pre, a {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+
+
+// Breakpoints definition.
+@include breakpoints((
+        xlarge: (1281px, 1680px),
+        large: (981px, 1280px),
+        medium: (737px, 980px),
+        small: (481px, 736px),
+        xsmall: (null, 480px),
+));
 
 body {
   overflow-x: hidden;
   margin: 0;
   font-family: 'Orelo-sw-bi', serif;
   background: #fff;
+
+  font-size: 15pt;
+  line-height: 1.65em;
+
+  @include breakpoint('<=xlarge') {
+    font-size: 13pt;
+  }
+
+  @include breakpoint('<=large') {
+    font-size: 12pt;
+  }
+
+  @include breakpoint('<=small') {
+    font-size: 11pt;
+  }
 
   &::before {
     content: ' ';
@@ -23,8 +59,6 @@ body {
   padding: 20px 0;
   margin: 100px 0;
 }
-
-
 
 .flexcontainer {
   display: flex;
