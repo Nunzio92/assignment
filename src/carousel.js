@@ -75,12 +75,11 @@ export class Carousel {
                 </div>
                 <div class="carousel">
                     <div class="carousel__wrap">
+                    <!--slides chunk going here-->
                     </div>
-                    <div>
                     <div class="carousel__progress">
                         <div class="carousel__progress_bar"></div>
-                         <div class="img-spinning-circle"></div>
-                    </div>
+                        <div class="img-spinning-circle"></div>
                     </div>
                     <div class="carousel__navigation_prev"></div>
                     <div class="carousel__navigation_next"></div>
@@ -239,11 +238,11 @@ export class Carousel {
         window.addEventListener('resize', this.calculate);
 
         if (this.draggable) {
-            this.$el.addEventListener('touchstart', this.handleTouchStart);
+            this.$wrap.addEventListener('touchstart', this.handleTouchStart);
             window.addEventListener('touchmove', this.handleTouchMove);
             window.addEventListener('touchend', this.handleTouchEnd);
 
-            this.$el.addEventListener('mousedown', this.handleTouchStart);
+            this.$wrap.addEventListener('mousedown', this.handleTouchStart);
             window.addEventListener('mousemove', this.handleTouchMove);
             window.addEventListener('mouseup', this.handleTouchEnd);
             document.body.addEventListener('mouseleave', this.handleTouchEnd);

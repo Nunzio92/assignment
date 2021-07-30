@@ -150,7 +150,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff; }
+    color: #fff;
+    min-width: 40px; }
     .carousel__navigation_prev.disabled, .carousel__navigation_next.disabled {
       visibility: hidden; }
     .carousel__navigation_prev:after, .carousel__navigation_next:after {
