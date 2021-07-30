@@ -28,9 +28,7 @@ body {
   margin: 0;
   font-family: 'Orelo-sw-bi', serif;
   background: #fff;
-  background: url('../../assets/img/background.jpg') no-repeat;
-  background-size: cover;
-  //background-size: auto 100%;
+
   font-size: 15pt;
   line-height: 1.65em;
 
@@ -46,15 +44,18 @@ body {
     font-size: 11pt;
   }
 
-  //&::before {
-  //  content: ' ';
-  //  position: fixed;
-  //  top: 0;
-  //  left: 0;
-  //  right: 0;
-  //  bottom: 0;
-  //  z-index: -1;
-  //}
+  &::before {
+    content: ' ';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: url('../../assets/img/background.jpg') no-repeat;
+    background-size: 110% auto;
+    background-position-y: 0;
+  }
 }
 
 .wrap {
