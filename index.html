@@ -12,8 +12,8 @@
     <link rel="stylesheet" type="text/css" href="assets/css/carousel.css">
     <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
 <!--    preload the critical resources is a good strategy for speed DomContentLoad time -->
-    <link rel="modulepreload" href="src/carousel.mjs">
-    <link rel="modulepreload" href="src/utility/utility.mjs">
+    <link rel="modulepreload" href="src/carousel.js">
+    <link rel="modulepreload" href="src/utility/utility.js">
     <link rel="preload" as="image" href="./assets/img/background.jpg">
 
 
@@ -25,8 +25,8 @@
 <div id="my-carousel-2" class="wrap"></div>
 
 <script type="module">
-    import {delay, generateXCardModel} from './src/utility/utility.mjs';
-    import {Carousel} from './src/carousel.mjs';
+    import {delay, generateXCardModel} from './src/utility/utility.js';
+    import {Carousel} from './src/carousel.js';
 
     let options1 = {
         container: '#my-carousel',
