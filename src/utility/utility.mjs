@@ -29,7 +29,8 @@ function generateXCardModel(cardNumber) {
 
     // getRandomInt is useful for giving some aleatory to the model structure
     return Array.from({length: cardNumber}, (value, index) => ({
-        image: `https://picsum.photos/300/150?_=${getRandomInt(100)}`, //the random query pram let to avoid the backend cache! different image for concurrent http call!
+        // Random query param avoid the backend cache! Different image for concurrent http call!
+        image: `https://picsum.photos/300/150?_=${getRandomInt(100)}`,
         type: cardType[getRandomInt(cardType.length)],
         duration: getRandomInt(5000), // seconds
         title: randomTitle[getRandomInt(randomTitle.length)],
@@ -72,7 +73,7 @@ function timeFormatter(number) {
  * @returns {ChildNode}
  */
 function htmlToElement(html) {
-    var template = document.createElement('template');
+    const template = document.createElement('template');
     html = html.trim(); // Never return a text node of whitespace as the result
     template.innerHTML = html;
     return template.content.firstChild;

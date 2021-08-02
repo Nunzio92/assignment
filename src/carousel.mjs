@@ -1,7 +1,7 @@
-import {fromSecToH, htmlToElement} from "./utility/utility.js";
+import {fromSecToH, htmlToElement} from "./utility/utility.mjs";
 
-// linear interpolation law between two known points
-const lerp = (f0, f1, t) => (1 - t) * f0 + t * f1;
+// linear interpolation law between two known inputs (value1, value2) for a parameter (t) in the closed unit interval [0, 1]
+const lerp = (value1, value2, t) => (1 - t) * value1 + t * value2;
 // return a value between an upper and lower bound or the bound
 const clamp = (val, min, max) => Math.max(min, Math.min(val, max));
 // get card width or min-width (is possible to used css var for better sync between css and js)
@@ -62,7 +62,7 @@ export class Carousel {
             'cardHtml',
             'placeholderHtml',
             'renderCarousel',
-            'updateElements',
+            'updateElementsAndWidths',
             'addEventsListener',
             'calculateWidths',
             'toggleNavigation',
@@ -82,15 +82,15 @@ export class Carousel {
      * Method for render the carousel base structure (slide wrapper and info row)
      */
     renderCarousel() {
-        // <my-carousel> is unknown html tag, it isn't a webcomponents (then is ignored by browser) but is useful for identifying the component location
-        // inside the dom (angular style!)
+        // <my-carousel> is unknown html tag, it isn't a webcomponents (then is ignored by browser) but is useful for
+        // identifying the component location inside the dom (angular style!)
         this.$container.appendChild(htmlToElement(`
             <my-carousel> 
                 <div class="row carousel__info">
                     <div class="col carousel__info_icon"><span class="material-icons">lightbulb</span></div>
                     <div class="col">
                         <h1 class="carousel__info_title">${this.title}</h1> 
-                        <h3 class="carousel__info_subtitle">${this.subtitle}</h3>
+                        <h2 class="carousel__info_subtitle">${this.subtitle}</h2>
                     </div>
                 </div>
                 <div class="carousel">
@@ -120,15 +120,11 @@ export class Carousel {
 
     toggleLoadingState() {
         this.fetching = !this.fetching;
-        if (this.fetching) {
-            this.$spinner.classList.add('active');
-        } else {
-            this.$spinner.classList.remove('active');
-        }
+        this.$spinner.classList.toggle('active', this.fetching)
     }
 
     /**
-     * async method for render cards placeholder and fetch new cards chunk
+     * Async method for render cards placeholder and fetch new cards chunk
      * @param startAnimationFrame default false, if true start animationFrame
      */
     async fetchNewChunk(startAnimationFrame = false) {
@@ -147,7 +143,7 @@ export class Carousel {
             let htmlElement = htmlToElement(this.placeholderHtml());
             this.$wrap.appendChild(htmlElement);
         });
-        this.updateElements();
+        this.updateElementsAndWidths();
     }
 
     /**
@@ -160,7 +156,7 @@ export class Carousel {
             let newChild = htmlToElement(this.cardHtml(card));
             oldChild.parentNode.replaceChild(newChild, oldChild);
         })
-        this.updateElements();
+        this.updateElementsAndWidths();
     }
 
     /**
@@ -205,7 +201,7 @@ export class Carousel {
                 </div>`;
     }
 
-    updateElements() {
+    updateElementsAndWidths() {
         this.$wrap = this.$el.querySelector('.carousel__wrap');
         this.$items = this.$el.querySelectorAll('.carousel__item');
         this.calculateWidths();
@@ -258,18 +254,10 @@ export class Carousel {
      * Toggle navigation button, when near to the carousel end call fetchNewChunk()
      */
     toggleNavigation() {
-        if (this.progress < this.$items[0].clientWidth) {
-            this.$prev.classList.add('disabled');
-        } else {
-            this.$prev.classList.remove('disabled');
-        }
-        if (this.progress >= this.maxScroll - 20) {
-            this.$next.classList.add('disabled');
-            if (!this.fetching) {
-                this.fetchNewChunk();
-            }
-        } else {
-            this.$next.classList.remove('disabled');
+        this.$prev.classList.toggle('disabled', this.progress < this.$items[0].clientWidth)
+        this.$next.classList.toggle('disabled', this.progress >= this.maxScroll - 20)
+        if (this.progress >= this.maxScroll - 20 && !this.fetching) {
+            this.fetchNewChunk();
         }
     }
 
@@ -309,6 +297,7 @@ export class Carousel {
         this.scale = lerp(this.scale, this.speed, 0.1);
         this.$items.forEach(i => {
             i.style.transform = `scale(${1 - Math.abs(this.speed) * 0.002})`;
+            // Placeholder have a rectangle svg element instead of img
             (i.querySelector('img') || i.querySelector('svg')).style.transform = `scaleX(${1 + Math.abs(this.speed) * 0.004})`;
         });
         this.toggleNavigation();
