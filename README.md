@@ -12,3 +12,6 @@ funny animation onHover!
 #How to serve
 
 Run command `npm start` to run the project
+
+#Live demo
+[https://responsive-carousel-nunzio-zappulla.netlify.app/](https://responsive-carousel-nunzio-zappulla.netlify.app/)
