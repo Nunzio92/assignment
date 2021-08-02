@@ -8,7 +8,7 @@ function getRandomInt(max) {
 }
 
 /**
- * Resolve a promise after x ms (as parameter)
+ * Resolve a promise after x ms
  * @param ms
  * @returns {Promise<unknown>}
  */
@@ -17,7 +17,7 @@ function delay(ms) {
 }
 
 /**
- * Generate aleatory card model based on getRandomInt()
+ * Generate aleatory cardModel based on getRandomInt()
  * @param cardNumber
  * @returns {{duration: number, image: string, type: string, title: string, cardinality: string}[]}
  */
@@ -38,7 +38,8 @@ function generateXCardModel(cardNumber) {
 }
 
 /**
- * Utility for convert seconds to hours. If the time is less then 1h different format is applied
+ * Utility for convert seconds to hours.
+ * If the time is less then 1h different format is applied
  * @param sec
  * @returns {string|null}
  */

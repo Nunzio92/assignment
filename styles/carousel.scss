@@ -46,7 +46,7 @@
   &__item {
     display: inline-block;
     width: var(--carousel_item_width);
-    min-width: 220px;
+    min-width: var(--carousel_item_min-width);
     padding: 15px 3vw 3vw 3vw;
     user-select: none;
   }
@@ -124,4 +124,5 @@
 // Css var can be super power for sync at runtime css and ts/js, with this conf can be possible to change the number of slide in the view at runtime, in a really easy way!
 :root {
   --carousel_item_width: 19vw;
+  --carousel_item_min-width: 220px;
 }

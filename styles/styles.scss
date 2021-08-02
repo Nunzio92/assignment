@@ -1,17 +1,4 @@
 @import "loader.scss";
-/// Sets breakpoints.
-/// @param {map} $x Breakpoints.
-@mixin breakpoints($x: ()) {
-  $breakpoints: $x !global;
-}
-
-@include breakpoints((
-        xlarge: (1281px, 1680px),
-        large: (981px, 1280px),
-        medium: (737px, 980px),
-        small: (481px, 736px),
-        xsmall: (null, 480px),
-));
 
 // Reset base tag.
 html, body, div, span, applet, object,

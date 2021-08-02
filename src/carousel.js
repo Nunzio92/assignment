@@ -1,8 +1,8 @@
 import {fromSecToH, htmlToElement} from "./utility/utility.js";
 
-const lerp = (f0, f1, t) => (1 - t) * f0 + t * f1
-const clamp = (val, min, max) => Math.max(min, Math.min(val, max))
-const cardWidth = () => document.documentElement.clientWidth * 0.19 < 220 ? 220 : document.documentElement.clientWidth;
+const lerp = (f0, f1, t) => (1 - t) * f0 + t * f1 // linear interpolation law between two known points
+const clamp = (val, min, max) => Math.max(min, Math.min(val, max)) // return a value between an upper and lower bound or the bounds
+const cardWidth = () => document.documentElement.clientWidth * 0.19 < 220 ? 220 : document.documentElement.clientWidth; // get card width or min-width (can be used css var for get sync between css and js)
 
 
 export class Carousel {
@@ -14,12 +14,18 @@ export class Carousel {
         this.title = obj.title;
         this.subtitle = obj.subtitle;
         this.fetchCards = obj.fetchCards;
-        this.hoverEffect = obj.hoverEffect ?? false;
+        this.hoverEffect = obj.hoverEffect ?? false;    // hoverEffect can be deactivated through carousel config
 
-        this.init();
+        this.init().then(_ => {
+            // console.log(`${this.$container.id} init complete`)
+        });
     }
 
-    init() {
+    /**
+     * init method
+     * @returns {Promise<void>}
+     */
+    async init() {
         // init progress variable
         this.progress = 0;
         this.speed = 0;
@@ -27,16 +33,17 @@ export class Carousel {
         this.x = 0;
         this.playrate = 0;
         this.fetching = false;
-        // init method
+        // init methods
         this.bindings()
         this.renderCarousel();
         this.initCarouselElements();
-        this.fetchNewChunk();
-
         this.events();
-        this.animationFrame();
+        await this.fetchNewChunk(true);
     }
 
+    /**
+     * binding this to all method
+     */
     bindings() {
         [
             'changeLoadingState',
@@ -63,8 +70,11 @@ export class Carousel {
         })
     }
 
+    /**
+     * Method for render the carousel base structure (slide wrapper and info row)
+     */
     renderCarousel() {
-        // <my-carousel> is not known html tag, it isn't a webcomponents (then is ignored by browser) but is useful for identifying the component location
+        // <my-carousel> is unknown html tag, it isn't a webcomponents (then is ignored by browser) but is useful for identifying the component location
         // inside the dom (angular style!)
         this.$container.appendChild(htmlToElement(`
             <my-carousel> 
@@ -90,6 +100,9 @@ export class Carousel {
         `));
     }
 
+    /**
+     * Define all variables for animation.
+     */
     initCarouselElements() {
         this.$el = this.$container.querySelector('.carousel');
         this.$wrap = this.$el.querySelector('.carousel__wrap');
@@ -100,27 +113,39 @@ export class Carousel {
         this.$next = this.$el.querySelector('.carousel__navigation_next') || null;
     }
 
-    changeLoadingState(){
+    /**
+     * Change the loading state of the carousel true <=> false
+     */
+    changeLoadingState() {
         this.fetching = !this.fetching;
-        if (this.fetching){
+        if (this.fetching) {
             this.$spinner.classList.add('active');
         } else {
             this.$spinner.classList.remove('active');
         }
     }
 
-     async fetchNewChunk() {
-         this.changeLoadingState();
-         this.renderPlaceholderChunk();
-         let result = await this.fetchCards(this.chunkSize);
-         // this.fetchCards(this.chunkSize).then(result => {
-             this.renderCardChunk(result);
-             this.update();
-             this.changeLoadingState();
-         // })
-     }
+    /**
+     * async method for render card placeholders and fetch new cards chunk
+     * @param init
+     * @returns {Promise<void>}
+     */
+    async fetchNewChunk(init = false) {
+        this.changeLoadingState();
+        this.renderPlaceholderChunk();
+        if (init) {
+            this.animationFrame();
+        }
+        let result = await this.fetchCards(this.chunkSize);
+        this.renderCardChunk(result);
+        this.update();
+        this.changeLoadingState();
+    }
 
-    renderPlaceholderChunk(){
+    /**
+     *  Append card placeholder to wrapper
+     */
+    renderPlaceholderChunk() {
         this.chunkSizeArray.forEach(_ => {
             let htmlElement = htmlToElement(this.placeholderHtml());
             this.$wrap.appendChild(htmlElement);
@@ -128,6 +153,10 @@ export class Carousel {
         });
     }
 
+    /**
+     * Replace cards placeholder with real cards elements
+     * @param cards
+     */
     renderCardChunk(cards) {
         cards.forEach((card, index) => {
             let oldChild = this.$items[this.$items.length - (index + 1)];
@@ -136,8 +165,13 @@ export class Carousel {
         })
     }
 
-    cardHtml(card) {
-        let {image, type, duration, title, cardinality} = card;
+    /**
+     * generate HTML card from cardModel
+     * @param cardModel
+     * @returns {string}
+     */
+    cardHtml(cardModel) {
+        let {image, type, duration, title, cardinality} = cardModel;
         return `<div class="carousel__item">
                     <div class="card ${cardinality} ${this.hoverEffect ? 'enableHover' : ''}" >
                         <div class="wrapper__img">
@@ -152,6 +186,10 @@ export class Carousel {
                </div>`;
     }
 
+    /**
+     * Generate card's placeholder HTML
+     * @returns {string}
+     */
     placeholderHtml() {
         return `<div class="carousel__item">
                     <div class="card loading" id="placeHolder">
@@ -169,12 +207,20 @@ export class Carousel {
                 </div>`;
     }
 
+    /**
+     * Update the stored wrapper and items list Element,
+     * after that call calculate for update the stored width
+     */
     update() {
         this.$wrap = this.$el.querySelector('.carousel__wrap');
         this.$items = this.$el.querySelectorAll('.carousel__item');
         this.calculate(this.progress);
     }
 
+    /**
+     * Method for update width, on resize and on $items changes.
+     * Call handleFetchAndNav()
+     */
     calculate() {
         this.progress = this.progress || 0;
         this.wrapWidth = this.$items[0].clientWidth * this.$items.length;
@@ -183,6 +229,10 @@ export class Carousel {
         this.handleFetchAndNav();
     }
 
+    /**
+     * handleTouchStart logic
+     * @param e
+     */
     handleTouchStart(e) {
         e.preventDefault()
         this.dragging = true;
@@ -190,6 +240,11 @@ export class Carousel {
         this.$el.classList.add('dragging');
     }
 
+    /**
+     * handleTouchMove logic
+     * @param e
+     * @returns {boolean}
+     */
     handleTouchMove(e) {
         if (!this.dragging) return false;
         const x = e.clientX || e.touches[0].clientX;
@@ -198,11 +253,17 @@ export class Carousel {
         this.move();
     }
 
+    /**
+     * handleTouchEnd logic
+     */
     handleTouchEnd() {
         this.dragging = false;
         this.$el.classList.remove('dragging');
     }
 
+    /**
+     * handleNext click logic
+     */
     handleNext() {
         if (this.progress < this.maxScroll) {
             const itemWidth = this.$items[0].clientWidth
@@ -210,6 +271,9 @@ export class Carousel {
         }
     }
 
+    /**
+     * handlePrev click logic
+     */
     handlePrev() {
         if (this.progress > 0) {
             const itemWidth = this.$items[0].clientWidth
@@ -217,10 +281,16 @@ export class Carousel {
         }
     }
 
+    /**
+     * calculate progress, a value between an upper and lower bound
+     */
     move() {
         this.progress = clamp(this.progress, 0, this.maxScroll);
     }
 
+    /**
+     * enalbling or disabling navigation button, when near to the end call fetchNewChunk()
+     */
     handleFetchAndNav() {
         if (this.progress < this.$items[0].clientWidth) {
             this.$prev.classList.add('disabled');
@@ -229,7 +299,7 @@ export class Carousel {
         }
         if (this.progress >= this.maxScroll - 20) {
             this.$next.classList.add('disabled');
-            if (!this.fetching){
+            if (!this.fetching) {
                 this.fetchNewChunk();
             }
         } else {
@@ -237,6 +307,9 @@ export class Carousel {
         }
     }
 
+    /**
+     * Attach all eventListener
+     */
     events() {
         window.addEventListener('resize', this.calculate);
 
@@ -254,6 +327,10 @@ export class Carousel {
         this.$prev.addEventListener('click', this.handlePrev, {passive: true});
     }
 
+    /**
+     * Handle dragging and smooth cards animation.
+     * Call handleFetchAndNav() on each iteration.
+     */
     animationFrame() {
         requestAnimationFrame(this.animationFrame)
         this.x = lerp(this.x, this.progress, 0.1);

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "buildSass": "node-sass styles --output=assets/css/",
+    "start": "node-sass styles --output=assets/css/",
+    "poststart": "http-server ./ -a localhost -o ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nunzio Zappulla",
   "type": "module",
-  "dependencies": {},
   "devDependencies": {
-    "node-sass": "^6.0.1"
+    "node-sass": "^6.0.1",
+    "http-server": "^0.12.3"
   }
 }

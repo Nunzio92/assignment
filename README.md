@@ -8,3 +8,7 @@ the structure of the project is the follow:
 Chunk of 6 cards will be loaded when carousel reach end, if the loading state is true 
 is not possible to load more chunk until finish fetching. Set `hoverEffect:true` for 
 funny animation onHover!
+
+#How to serve
+
+Run command `npm start` to run the project
