@@ -1,14 +1,29 @@
 import {fromSecToH, htmlToElement} from "./utility/utility.js";
 
-const lerp = (f0, f1, t) => (1 - t) * f0 + t * f1 // linear interpolation law between two known points
-const clamp = (val, min, max) => Math.max(min, Math.min(val, max)) // return a value between an upper and lower bound or the bounds
-const cardWidth = () => document.documentElement.clientWidth * 0.19 < 220 ? 220 : document.documentElement.clientWidth; // get card width or min-width (can be used css var for get sync between css and js)
-
+// linear interpolation law between two known points
+const lerp = (f0, f1, t) => (1 - t) * f0 + t * f1;
+// return a value between an upper and lower bound or the bound
+const clamp = (val, min, max) => Math.max(min, Math.min(val, max));
+// get card width or min-width (is possible to used css var for better sync between css and js)
+const cardWidth = () => document.documentElement.clientWidth * 0.19 < 220 ? 220 : document.documentElement.clientWidth;
+// CONSTANT chunk size
+const chunkSize = 6;
 
 export class Carousel {
+    /**
+     * @param obj configuration object =
+     * {
+     *   container: string,
+     *   draggable: boolean,
+     *   title: string,
+     *   subtitle: string,
+     *   fetchCards: async function,
+     *   hoverEffect: boolean
+     * }
+     */
     constructor(obj) {
         this.$container = document.querySelector(obj.container);
-        this.chunkSize = 6;
+        this.chunkSize = chunkSize;
         this.chunkSizeArray = Array.from({length: this.chunkSize});
         this.draggable = obj.draggable ?? true;         // drag can be deactivated through carousel config
         this.title = obj.title;
@@ -21,10 +36,6 @@ export class Carousel {
         });
     }
 
-    /**
-     * init method
-     * @returns {Promise<void>}
-     */
     async init() {
         // init progress variable
         this.progress = 0;
@@ -34,19 +45,16 @@ export class Carousel {
         this.playrate = 0;
         this.fetching = false;
         // init methods
-        this.bindings()
+        this.bindings();
         this.renderCarousel();
         this.initCarouselElements();
-        this.events();
+        this.addEventsListener();
         await this.fetchNewChunk(true);
     }
 
-    /**
-     * binding this to all method
-     */
     bindings() {
         [
-            'changeLoadingState',
+            'toggleLoadingState',
             'fetchNewChunk',
             'renderPlaceholderChunk',
             'renderCardChunk',
@@ -54,11 +62,10 @@ export class Carousel {
             'cardHtml',
             'placeholderHtml',
             'renderCarousel',
-            'update',
-            'events',
-            'calculate',
-            'move',
-            'handleFetchAndNav',
+            'updateElements',
+            'addEventsListener',
+            'calculateWidths',
+            'toggleNavigation',
             'handleTouchStart',
             'handleTouchMove',
             'handleTouchEnd',
@@ -66,6 +73,7 @@ export class Carousel {
             'handlePrev',
             'animationFrame'
         ].forEach(i => {
+            // binding this to all method
             this[i] = this[i].bind(this);
         })
     }
@@ -100,9 +108,6 @@ export class Carousel {
         `));
     }
 
-    /**
-     * Define all variables for animation.
-     */
     initCarouselElements() {
         this.$el = this.$container.querySelector('.carousel');
         this.$wrap = this.$el.querySelector('.carousel__wrap');
@@ -113,10 +118,7 @@ export class Carousel {
         this.$next = this.$el.querySelector('.carousel__navigation_next') || null;
     }
 
-    /**
-     * Change the loading state of the carousel true <=> false
-     */
-    changeLoadingState() {
+    toggleLoadingState() {
         this.fetching = !this.fetching;
         if (this.fetching) {
             this.$spinner.classList.add('active');
@@ -126,49 +128,45 @@ export class Carousel {
     }
 
     /**
-     * async method for render card placeholders and fetch new cards chunk
-     * @param init
-     * @returns {Promise<void>}
+     * async method for render cards placeholder and fetch new cards chunk
+     * @param startAnimationFrame default false, if true start animationFrame
      */
-    async fetchNewChunk(init = false) {
-        this.changeLoadingState();
+    async fetchNewChunk(startAnimationFrame = false) {
+        this.toggleLoadingState();
         this.renderPlaceholderChunk();
-        if (init) {
+        if (startAnimationFrame) {
             this.animationFrame();
         }
         let result = await this.fetchCards(this.chunkSize);
         this.renderCardChunk(result);
-        this.update();
-        this.changeLoadingState();
+        this.toggleLoadingState();
     }
 
-    /**
-     *  Append card placeholder to wrapper
-     */
     renderPlaceholderChunk() {
         this.chunkSizeArray.forEach(_ => {
             let htmlElement = htmlToElement(this.placeholderHtml());
             this.$wrap.appendChild(htmlElement);
-            this.update();
         });
+        this.updateElements();
     }
 
     /**
      * Replace cards placeholder with real cards elements
-     * @param cards
+     * @param cards input model from fetchCards
      */
     renderCardChunk(cards) {
         cards.forEach((card, index) => {
             let oldChild = this.$items[this.$items.length - (index + 1)];
-            let newChild = htmlToElement(this.cardHtml(card))
-            oldChild.parentNode.replaceChild(newChild, oldChild)
+            let newChild = htmlToElement(this.cardHtml(card));
+            oldChild.parentNode.replaceChild(newChild, oldChild);
         })
+        this.updateElements();
     }
 
     /**
-     * generate HTML card from cardModel
-     * @param cardModel
-     * @returns {string}
+     * Generate HTML card from cardModel
+     * @param cardModel input card model
+     * @returns {string} HTML string template
      */
     cardHtml(cardModel) {
         let {image, type, duration, title, cardinality} = cardModel;
@@ -188,7 +186,7 @@ export class Carousel {
 
     /**
      * Generate card's placeholder HTML
-     * @returns {string}
+     * @returns {string} HTML string template
      */
     placeholderHtml() {
         return `<div class="carousel__item">
@@ -207,63 +205,41 @@ export class Carousel {
                 </div>`;
     }
 
-    /**
-     * Update the stored wrapper and items list Element,
-     * after that call calculate for update the stored width
-     */
-    update() {
+    updateElements() {
         this.$wrap = this.$el.querySelector('.carousel__wrap');
         this.$items = this.$el.querySelectorAll('.carousel__item');
-        this.calculate(this.progress);
+        this.calculateWidths();
     }
 
     /**
-     * Method for update width, on resize and on $items changes.
-     * Call handleFetchAndNav()
+     * Calculate wrapper width and maxScroll depth, when window.resize or new fetched elements.
      */
-    calculate() {
-        this.progress = this.progress || 0;
+    calculateWidths() {
         this.wrapWidth = this.$items[0].clientWidth * this.$items.length;
         this.$wrap.style.width = `${this.wrapWidth}px`;
         this.maxScroll = this.wrapWidth - this.$el.clientWidth;
-        this.handleFetchAndNav();
     }
 
-    /**
-     * handleTouchStart logic
-     * @param e
-     */
     handleTouchStart(e) {
-        e.preventDefault()
+        e.preventDefault();
         this.dragging = true;
         this.startX = e.clientX || e.touches[0].clientX;
         this.$el.classList.add('dragging');
     }
 
-    /**
-     * handleTouchMove logic
-     * @param e
-     * @returns {boolean}
-     */
     handleTouchMove(e) {
         if (!this.dragging) return false;
         const x = e.clientX || e.touches[0].clientX;
         this.progress += (this.startX - x) * 2.5;
         this.startX = x;
-        this.move();
+        this.progress = clamp(this.progress, 0, this.maxScroll);
     }
 
-    /**
-     * handleTouchEnd logic
-     */
     handleTouchEnd() {
         this.dragging = false;
         this.$el.classList.remove('dragging');
     }
 
-    /**
-     * handleNext click logic
-     */
     handleNext() {
         if (this.progress < this.maxScroll) {
             const itemWidth = this.$items[0].clientWidth
@@ -271,9 +247,6 @@ export class Carousel {
         }
     }
 
-    /**
-     * handlePrev click logic
-     */
     handlePrev() {
         if (this.progress > 0) {
             const itemWidth = this.$items[0].clientWidth
@@ -282,16 +255,9 @@ export class Carousel {
     }
 
     /**
-     * calculate progress, a value between an upper and lower bound
+     * Toggle navigation button, when near to the carousel end call fetchNewChunk()
      */
-    move() {
-        this.progress = clamp(this.progress, 0, this.maxScroll);
-    }
-
-    /**
-     * enalbling or disabling navigation button, when near to the end call fetchNewChunk()
-     */
-    handleFetchAndNav() {
+    toggleNavigation() {
         if (this.progress < this.$items[0].clientWidth) {
             this.$prev.classList.add('disabled');
         } else {
@@ -307,12 +273,8 @@ export class Carousel {
         }
     }
 
-    /**
-     * Attach all eventListener
-     */
-    events() {
-        window.addEventListener('resize', this.calculate);
-
+    addEventsListener() {
+        window.addEventListener('resize', this.calculateWidths);
         if (this.draggable) {
             this.$wrap.addEventListener('touchstart', this.handleTouchStart);
             window.addEventListener('touchmove', this.handleTouchMove);
@@ -328,8 +290,8 @@ export class Carousel {
     }
 
     /**
-     * Handle dragging and smooth cards animation.
-     * Call handleFetchAndNav() on each iteration.
+     * Animation scale cards based on scroll speed.
+     * Call toggleNavigation() every time
      */
     animationFrame() {
         requestAnimationFrame(this.animationFrame)
@@ -349,10 +311,6 @@ export class Carousel {
             i.style.transform = `scale(${1 - Math.abs(this.speed) * 0.002})`;
             (i.querySelector('img') || i.querySelector('svg')).style.transform = `scaleX(${1 + Math.abs(this.speed) * 0.004})`;
         });
-        this.handleFetchAndNav();
+        this.toggleNavigation();
     }
-
-
 }
-
-

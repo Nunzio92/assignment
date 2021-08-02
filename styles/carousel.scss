@@ -1,24 +1,21 @@
 @import "card.scss";
+@import "loader.scss";
 
 .carousel__info {
   margin: 10px calc(30px + 3vw);
   color: #0b5ed7;
-
   &_icon {
     background-color: #0b5ed7;
     border-radius: 8px;
     padding: 5px 10px;
     margin-right: 15px;
-
     span {
       color: #fff;
     }
   }
-
   &_title {
     margin: 0 0 0.5rem;
   }
-
   &_subtitle {
     text-overflow: ellipsis;
     max-width: 50vw;
@@ -34,15 +31,12 @@
   overflow: hidden;
   cursor: grab;
   position: relative;
-
   &.dragging {
     cursor: grabbing;
   }
-
   &__wrap {
     white-space: nowrap;
   }
-
   &__item {
     display: inline-block;
     width: var(--carousel_item_width);
@@ -50,7 +44,6 @@
     padding: 15px 3vw 3vw 3vw;
     user-select: none;
   }
-
   &__progress {
     position: relative;
     z-index: 2;
@@ -61,7 +54,6 @@
     left: 3vw;
     height: 1px;
     background: rgba(255, 255, 255, .2);
-
     &_bar {
       position: absolute;
       z-index: 1;
@@ -74,7 +66,6 @@
       transform-origin: 0% 0%;
     }
   }
-
   &__navigation_prev, &__navigation_next {
     position: absolute;
     top: 15px;
@@ -88,11 +79,9 @@
     justify-content: center;
     color: #fff;
     min-width: 35px;
-
     &.disabled {
       visibility: hidden;
     }
-
     &:after {
       font-size: 2rem;
       font-weight: 900;
@@ -102,7 +91,6 @@
       line-height: 1;
     }
   }
-
   &__navigation_prev {
     left: -1px;
 
@@ -110,18 +98,16 @@
       content: '<';
     }
   }
-
   &__navigation_next {
     right: -1px;
-
     &:after {
       content: '>';
     }
   }
 }
 
-
-// Css var can be super power for sync at runtime css and ts/js, with this conf can be possible to change the number of slide in the view at runtime, in a really easy way!
+// Css var can be super power for sync at runtime css and ts/js,
+// with this conf can be possible to change the number of slide in the view at runtime, in a really easy way!
 :root {
   --carousel_item_width: 19vw;
   --carousel_item_min-width: 220px;
