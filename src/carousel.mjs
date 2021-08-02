@@ -1,4 +1,4 @@
-import {fromSecToH, htmlToElement} from "./utility/utility.js";
+import {fromSecToH, htmlToElement} from "./utility/utility.mjs";
 
 // linear interpolation law between two known inputs (value1, value2) for a parameter (t) in the closed unit interval [0, 1]
 const lerp = (value1, value2, t) => (1 - t) * value1 + t * value2;
