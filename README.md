@@ -9,9 +9,9 @@ Chunk of 6 cards will be loaded when carousel reach end, if the loading state is
 is not possible to load more chunk until finish fetching. Set `hoverEffect:true` for 
 funny animation onHover!
 
-#How to serve
+# How to serve
 
 Run command `npm start` to run the project
 
-#Live demo
+# Live demo
 [https://responsive-carousel-nunzio-zappulla.netlify.app/](https://responsive-carousel-nunzio-zappulla.netlify.app/)
